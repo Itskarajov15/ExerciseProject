@@ -114,5 +114,22 @@ namespace ExerciseProject.API.Features.Users
 
             return result > 0;
         }
+
+        public async Task<bool> ValidateUser(UserDto userModel)
+        {
+            var result = 0;
+
+            using (var connection = new SqlConnection(this.connectionString))
+            {
+                var command = new SqlCommand("SELECT COUNT(*) FROM Users WHERE Name = @name AND Password = @password", connection);
+                command.Parameters.AddWithValue("name", userModel.Name);
+                command.Parameters.AddWithValue("password", userModel.Password);
+
+                await connection.OpenAsync();
+                result = (int)await command.ExecuteScalarAsync();
+            }
+
+            return result > 0;
+        }
     }
 }

@@ -20,12 +20,7 @@ namespace ExerciseProject.API.Features.Users
         {
             var isCreated = await this.userService.Create(userModel);
 
-            if (!isCreated)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
+            return Ok(isCreated);
         }
 
         [HttpGet]
@@ -53,6 +48,15 @@ namespace ExerciseProject.API.Features.Users
             await this.userService.UpdateUser(id, userModel);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route(nameof(ValidateUser))]
+        public async Task<ActionResult> ValidateUser(UserDto userModel)
+        {
+            var userIsValid = await this.userService.ValidateUser(userModel);
+
+            return Ok(userIsValid);
         }
     }
 }
