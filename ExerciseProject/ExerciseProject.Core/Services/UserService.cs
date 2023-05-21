@@ -32,9 +32,9 @@ namespace ExerciseProject.Core.Services
             return userCreated;
         }
 
-        public async Task<bool> UserExists(LoginViewModel user)
+        public async Task<int> UserExists(LoginViewModel user)
         {
-            var userExists = false;
+            var userId = -1;
 
             var serializedUser = JsonConvert.SerializeObject(user);
             var content = new StringContent(serializedUser, Encoding.UTF8, "application/json");
@@ -43,10 +43,10 @@ namespace ExerciseProject.Core.Services
             if (response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
-                userExists = JsonConvert.DeserializeObject<bool>(responseData);
+                userId = JsonConvert.DeserializeObject<int>(responseData);
             }
 
-            return userExists;
+            return userId;
         }
     }
 }

@@ -14,6 +14,6 @@ namespace ExerciseProject.API.Features.Users
 
         Task UpdateUser(int id, UserDto userModel);
 
-        Task<bool> ValidateUser(UserDto userModel);
+        Task<int> ValidateUser(UserDto userModel);
     }
 }

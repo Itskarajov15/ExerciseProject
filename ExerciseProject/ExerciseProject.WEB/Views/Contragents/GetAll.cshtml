@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ContragentViewModel>
+@{
+    ViewData["Title"] = "My Contragents";
+}
+
+<div class="mt-4 text-center">
+    <h2>My Contragents</h2>
+</div>
+
+<section class="mt-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-10 col-md-8">
+                @if (Model.Count() > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th class="text-center">Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var contragent in Model)
+                                {
+                                    <tr class="clickable-row">
+                                        <td class="text-center">@contragent.Name</td>
+                                    </tr>
+                                    <tr class="hidden-row" style="display: none;">
+                                        <td colspan="4" class="text-center">
+                                            <p>Address: @contragent.Address</p>
+                                            <p>Mail: @contragent.Mail</p>
+                                            <p>VAT: @contragent.VAT</p>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="mt-4 text-center">
+                        <h4>You do not have any contragents.</h4>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        $(".clickable-row").click(function () {
+            $(this).next(".hidden-row").toggle();
+        });
+    });
+</script>

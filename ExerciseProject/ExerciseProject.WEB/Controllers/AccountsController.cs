@@ -55,7 +55,9 @@ namespace ExerciseProject.WEB.Controllers
                 return View(user);
             }
 
-            if (await this.userService.UserExists(user) == false)
+            var userId = await this.userService.UserExists(user);
+
+            if (userId == -1)
             {
                 ModelState.AddModelError(String.Empty, "Invalid login credentials");
                 return View(user);
@@ -64,6 +66,7 @@ namespace ExerciseProject.WEB.Controllers
             var claims = new List<Claim>
             {
                 new Claim("Name", user.Name),
+                new Claim("UserId", userId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(
