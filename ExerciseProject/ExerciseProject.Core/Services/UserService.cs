@@ -28,6 +28,10 @@ namespace ExerciseProject.Core.Services
                 string responseData = await response.Content.ReadAsStringAsync();
                 userCreated = JsonConvert.DeserializeObject<bool>(responseData);
             }
+            else
+            {
+                throw new InvalidOperationException();
+            }
 
             return userCreated;
         }
@@ -44,6 +48,10 @@ namespace ExerciseProject.Core.Services
             {
                 string responseData = await response.Content.ReadAsStringAsync();
                 userId = JsonConvert.DeserializeObject<int>(responseData);
+            }
+            else
+            {
+                throw new InvalidOperationException();
             }
 
             return userId;

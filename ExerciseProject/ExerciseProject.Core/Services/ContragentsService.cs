@@ -28,6 +28,10 @@ namespace ExerciseProject.Core.Services
                 string responseData = await response.Content.ReadAsStringAsync();
                 contragentCreated = JsonConvert.DeserializeObject<bool>(responseData);
             }
+            else
+            {
+                throw new InvalidOperationException();
+            }
 
             return contragentCreated;
         }
@@ -42,6 +46,10 @@ namespace ExerciseProject.Core.Services
             {
                 string responseData = await response.Content.ReadAsStringAsync();
                 contragents = JsonConvert.DeserializeObject<List<ContragentViewModel>>(responseData);
+            }
+            else
+            {
+                throw new InvalidOperationException();
             }
 
             return contragents;
