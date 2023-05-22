@@ -1,4 +1,5 @@
-﻿using ExerciseProject.API.Features.Users.Models;
+﻿using ExerciseProject.API.Features.Common;
+using ExerciseProject.API.Features.Users.Models;
 using Microsoft.Data.SqlClient;
 
 namespace ExerciseProject.API.Features.Users
@@ -16,14 +17,18 @@ namespace ExerciseProject.API.Features.Users
         {
             if (!await UserExists(userModel.Name))
             {
+                byte[] salt;
+                var hashedPassword = PasswordHasher.HashPasword(userModel.Password, out salt);
+
                 using (var connection = new SqlConnection(this.connectionString))
                 {
-                    var command = new SqlCommand(@"INSERT INTO Users (Name, Password)
+                    var command = new SqlCommand(@"INSERT INTO Users (Name, Password, Salt)
                                                    VALUES
-                                                   (@name, @password)", connection);
+                                                   (@name, @password, @salt)", connection);
 
                     command.Parameters.AddWithValue("name", userModel.Name);
-                    command.Parameters.AddWithValue("password", userModel.Password); //Hash the password
+                    command.Parameters.AddWithValue("password", hashedPassword);
+                    command.Parameters.AddWithValue("salt", salt);
 
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
@@ -121,12 +126,22 @@ namespace ExerciseProject.API.Features.Users
 
             using (var connection = new SqlConnection(this.connectionString))
             {
-                var command = new SqlCommand("SELECT Id FROM Users WHERE Name = @name AND Password = @password", connection);
+                var command = new SqlCommand("SELECT * FROM Users WHERE Name = @name", connection);
                 command.Parameters.AddWithValue("name", userModel.Name);
-                command.Parameters.AddWithValue("password", userModel.Password);
 
                 await connection.OpenAsync();
-                userId = (int)await command.ExecuteScalarAsync();
+                var reader = await command.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var storedPasswordHash = (string)reader["Password"];
+                    var salt = (byte[])reader["Salt"];
+
+                    if (PasswordHasher.VerifyPassword(userModel.Password, storedPasswordHash, salt))
+                    {
+                        userId = (int)reader["Id"];
+                    }
+                }
             }
 
             return userId;

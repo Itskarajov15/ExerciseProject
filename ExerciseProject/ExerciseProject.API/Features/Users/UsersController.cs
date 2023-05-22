@@ -54,9 +54,9 @@ namespace ExerciseProject.API.Features.Users
         [Route(nameof(ValidateUser))]
         public async Task<ActionResult> ValidateUser(UserDto userModel)
         {
-            var userIsValid = await this.userService.ValidateUser(userModel);
+            var userId = await this.userService.ValidateUser(userModel);
 
-            return Ok(userIsValid);
+            return Ok(userId);
         }
     }
 }
