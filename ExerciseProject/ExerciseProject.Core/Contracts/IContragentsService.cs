@@ -7,5 +7,9 @@ namespace ExerciseProject.Core.Contracts
         Task<bool> Create(ContragentViewModel contragent);
 
         Task<IEnumerable<ContragentViewModel>> GetAllByUserId(int userId);
+
+        Task<EditContragentViewModel> GetContragentForEdit(int contragentId);
+
+        Task EditContragent(EditContragentViewModel contragent);
     }
 }

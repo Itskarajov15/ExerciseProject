@@ -2,7 +2,6 @@
 using ExerciseProject.Core.Models.Contragents;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ExerciseProject.WEB.Controllers
 {
@@ -36,7 +35,7 @@ namespace ExerciseProject.WEB.Controllers
 
             if (!isCreated)
             {
-                ModelState.AddModelError(String.Empty, "Something went wrong!");
+                ModelState.AddModelError(String.Empty, "A contragents with that VAT number already exists");
                 return View(contragent);
             }
 
@@ -51,6 +50,37 @@ namespace ExerciseProject.WEB.Controllers
             var contragents = await this.contragentsService.GetAllByUserId(userId);
 
             return View(contragents);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int contragentId)
+        {
+            var contragent = await this.contragentsService.GetContragentForEdit(contragentId);
+
+            if (contragent.UserId == int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value))
+            {
+                return View(contragent);
+            }
+
+            return RedirectToAction("GetAll", "Contragents");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditContragentViewModel contragent)
+        {
+            if (contragent.UserId != int.Parse(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value))
+            {
+                return RedirectToAction("GetAll", "Contragents");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(contragent);
+            }
+
+            await this.contragentsService.EditContragent(contragent);
+
+            return RedirectToAction("GetAll", "Contragents");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using ExerciseProject.API.Features.Contragents.Models;
+using Microsoft.Data.SqlClient;
 
 namespace ExerciseProject.API.Features.Contragents
 {
@@ -13,7 +14,7 @@ namespace ExerciseProject.API.Features.Contragents
 
         public async Task<bool> Create(ContragentDto contragent)
         {
-            if (await ContragentsExists(contragent.VAT, contragent.UserId) == false)
+            if (await ContragentsExists(contragent.VAT) == false)
             {
                 using (var connection = new SqlConnection(this.connectionString))
                 {
@@ -26,7 +27,7 @@ namespace ExerciseProject.API.Features.Contragents
                     command.Parameters.AddWithValue("mail", contragent.Mail);
                     command.Parameters.AddWithValue("userId", contragent.UserId);
                     command.Parameters.AddWithValue("vat", contragent.VAT);
-                    
+
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
                 }
@@ -37,53 +38,96 @@ namespace ExerciseProject.API.Features.Contragents
             return false;
         }
 
-        public async Task<IEnumerable<ContragentDto>> GetContragentsByUserId(int userId)
+        public async Task EditContragent(EditContragentDto contragent)
         {
-            var contragents = new List<ContragentDto>();
+            using (var connection = new SqlConnection(this.connectionString))
+            {
+                var command = new SqlCommand("EXEC EditContragent @id = @contragentId, @address = @newAddress, @mail = @newMail, @vat = @newVat", connection);
+                command.Parameters.AddWithValue("contragentId", contragent.Id);
+                command.Parameters.AddWithValue("newAddress", contragent.Address);
+                command.Parameters.AddWithValue("newMail", contragent.Mail);
+                command.Parameters.AddWithValue("newVat", contragent.VAT);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<EditContragentDto> GetContragentForEdit(int id)
+        {
+            EditContragentDto contragent = null;
 
             using (var connection = new SqlConnection(this.connectionString))
             {
-                var command = new SqlCommand("SELECT * FROM Contragents WHERE UserId = @userId", connection);
-
-                command.Parameters.AddWithValue("userId", userId);
+                var command = new SqlCommand("SELECT * FROM GetContragentById(@contragentId)", connection);
+                command.Parameters.AddWithValue("contragentId", id);
 
                 await connection.OpenAsync();
                 var reader = await command.ExecuteReaderAsync();
 
-                while (await reader.ReadAsync())
+                if (await reader.ReadAsync())
                 {
-                    var contragent = new ContragentDto()
+                    contragent = new EditContragentDto()
                     {
-                        Name = (string)reader["Name"],
+                        Id = (int)reader["Id"],
                         Address = (string)reader["Address"],
+                        VAT = (string)reader["VAT"],
                         Mail = (string)reader["Mail"],
-                        UserId = (int)reader["UserId"],
-                        VAT = (string)reader["VAT"]
+                        UserId = (int)reader["UserId"]
                     };
-
-                    contragents.Add(contragent);
-                }
+                };
             }
 
-            return contragents;
+            return contragent;
         }
 
-        private async Task<bool> ContragentsExists(string vat, int userId)
+    public async Task<IEnumerable<ContragentDto>> GetContragentsByUserId(int userId)
+    {
+        var contragents = new List<ContragentDto>();
+
+        using (var connection = new SqlConnection(this.connectionString))
         {
-            var result = 0;
+            var command = new SqlCommand("SELECT * FROM Contragents WHERE UserId = @userId", connection);
 
-            using (var connection = new SqlConnection(this.connectionString))
+            command.Parameters.AddWithValue("userId", userId);
+
+            await connection.OpenAsync();
+            var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
             {
-                var command = new SqlCommand("SELECT COUNT(*) FROM Contragents WHERE UserId = @userId AND VAT = @vat", connection);
+                var contragent = new ContragentDto()
+                {
+                    Id = (int)reader["Id"],
+                    Name = (string)reader["Name"],
+                    Address = (string)reader["Address"],
+                    Mail = (string)reader["Mail"],
+                    UserId = (int)reader["UserId"],
+                    VAT = (string)reader["VAT"]
+                };
 
-                command.Parameters.AddWithValue("userId", userId);
-                command.Parameters.AddWithValue("vat", vat);
-
-                await connection.OpenAsync();
-                result = (int)await command.ExecuteScalarAsync();
+                contragents.Add(contragent);
             }
-
-            return result > 0;
         }
+
+        return contragents;
     }
+
+    private async Task<bool> ContragentsExists(string vat)
+    {
+        var result = 0;
+
+        using (var connection = new SqlConnection(this.connectionString))
+        {
+            var command = new SqlCommand("SELECT COUNT(*) FROM Contragents WHERE VAT = @vat", connection);
+
+            command.Parameters.AddWithValue("vat", vat);
+
+            await connection.OpenAsync();
+            result = (int)await command.ExecuteScalarAsync();
+        }
+
+        return result > 0;
+    }
+}
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ExerciseProject.API.Features.Contragents.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExerciseProject.API.Features.Contragents
 {
@@ -29,6 +30,24 @@ namespace ExerciseProject.API.Features.Contragents
             var contragents = await this.contragentsService.GetContragentsByUserId(userId);
 
             return Ok(contragents);
+        }
+
+        [HttpGet]
+        [Route(nameof(GetContragentForEdit))]
+        public async Task<IActionResult> GetContragentForEdit(int contragentId)
+        {
+            var contragents = await this.contragentsService.GetContragentForEdit(contragentId);
+
+            return Ok(contragents);
+        }
+
+        [HttpPost]
+        [Route(nameof(Edit))]
+        public async Task<IActionResult> Edit([FromBody] EditContragentDto contragent)
+        {
+            await this.contragentsService.EditContragent(contragent);
+
+            return Ok();
         }
     }
 }

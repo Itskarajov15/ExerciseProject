@@ -36,6 +36,18 @@ namespace ExerciseProject.Core.Services
             return contragentCreated;
         }
 
+        public async Task EditContragent(EditContragentViewModel contragent)
+        {
+            var serializedUser = JsonConvert.SerializeObject(contragent);
+            var content = new StringContent(serializedUser, Encoding.UTF8, "application/json");
+            var response = await this.httpClient.PostAsync($"{BaseUrl}/Contragents/Edit", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         public async Task<IEnumerable<ContragentViewModel>> GetAllByUserId(int userId)
         {
             var contragents = new List<ContragentViewModel>();
@@ -46,6 +58,25 @@ namespace ExerciseProject.Core.Services
             {
                 string responseData = await response.Content.ReadAsStringAsync();
                 contragents = JsonConvert.DeserializeObject<List<ContragentViewModel>>(responseData);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+
+            return contragents;
+        }
+
+        public async Task<EditContragentViewModel> GetContragentForEdit(int contragentId)
+        {
+            EditContragentViewModel contragents;
+
+            var response = await this.httpClient.GetAsync($"{BaseUrl}/Contragents/GetContragentForEdit?contragentId={contragentId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseData = await response.Content.ReadAsStringAsync();
+                contragents = JsonConvert.DeserializeObject<EditContragentViewModel>(responseData);
             }
             else
             {

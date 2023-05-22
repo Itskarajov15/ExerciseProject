@@ -1,10 +1,8 @@
-﻿namespace ExerciseProject.API.Features.Contragents
+﻿namespace ExerciseProject.API.Features.Contragents.Models
 {
-    public class ContragentDto
+    public class EditContragentDto
     {
         public int Id { get; set; }
-
-        public string Name { get; set; } = null!;
 
         public string Address { get; set; } = null!;
 

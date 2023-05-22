@@ -2,14 +2,9 @@
 
 namespace ExerciseProject.Core.Models.Contragents
 {
-    public class ContragentViewModel
+    public class EditContragentViewModel
     {
         public int Id { get; set; }
-
-        [Required]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "{0} must be between {2} and {1} characters long.")]
-        [Display(Name = "Name")]
-        public string Name { get; set; } = null!;
 
         [Required]
         [StringLength(255, MinimumLength = 10, ErrorMessage = "{0} must be between {2} and {1} characters long.")]
