@@ -19,6 +19,11 @@ namespace ExerciseProject.WEB.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View();
         }
 
@@ -44,6 +49,11 @@ namespace ExerciseProject.WEB.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View();
         }
 
