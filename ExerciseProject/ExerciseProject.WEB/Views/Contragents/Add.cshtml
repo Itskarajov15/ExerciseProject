@@ -1,42 +1,90 @@
-﻿@model ContragentViewModel
-@{
+﻿@{
     ViewData["Title"] = "Add Contragent";
 }
 
-<section class="p-6">
-    <h2 class="text-center">Add Contragent</h2>
-    <form method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger ml-4"></div>
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label asp-for="Name">Name</label>
-                <input asp-for="Name" type="text" class="form-control form-control-sm" required>
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="col-md-6 form-group">
-                <label asp-for="Address">Address</label>
-                <input asp-for="Address" type="text" class="form-control form-control-sm" required>
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <label asp-for="Mail">Mail</label>
-                <input asp-for="Mail" type="text" class="form-control form-control-sm" required>
-                <span asp-validation-for="Mail" class="text-danger"></span>
-            </div>
-            <div class="col-md-6 form-group">
-                <label asp-for="VAT">VAT</label>
-                <input asp-for="VAT" type="text" class="form-control form-control-sm" required>
-                <span asp-validation-for="VAT" class="text-danger"></span>
+<section class="login py-4 border-top-1">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8 align-item-center">
+                <div class="text-center">
+                    <h3 class="bg-gray p-4">Add Contragent</h3>
+                    <form id="formId" method="post">
+                        <div class="form-group">
+                            <label for="VAT">VAT</label>
+                            <input for="VAT" type="text" id="inputField" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn btn-primary">Find</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-        <div class="text-center mt-3">
-            <button type="submit" class="btn btn-primary">Add</button>
-        </div>
-    </form>
+        <div id="result" class="d-flex justify-content-center text-center mt-4"></div>
+    </div>
 </section>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<script>
+    $("#formId").submit(function (e) {
+        e.preventDefault();
+
+        $("#result").empty();
+
+        let vatNumber = $("#inputField").val();
+
+        $.ajax({
+            method: "GET",
+            url: `https://localhost:7046/Service/GetByVAT?vat=${vatNumber}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+
+                if (response == null) {
+                    alert("A contragent with that VAT number does not exist.");
+                    return;
+                }
+
+                let table = $('<table>');
+
+                let thead = $('<thead>').appendTo(table);
+                let headerRow = $('<tr>').appendTo(thead);
+                $('<th>').text('Name').addClass('text-center').appendTo(headerRow);
+                $('<th>').text('Address').addClass('text-center').appendTo(headerRow);
+                $('<th>').text('VAT').addClass('text-center').appendTo(headerRow);
+
+                let tbody = $('<tbody>').appendTo(table);
+                let row1 = $('<tr>').appendTo(tbody);
+                $('<td>').text(response.name).addClass('text-center px-3').appendTo(row1);
+                $('<td>').text(response.address).addClass('text-center px-3').appendTo(row1);
+                $('<td>').text(response.vat).addClass('text-center px-3').appendTo(row1);
+                $('<td>').text(response.vat).addClass('text-center px-3').appendTo(row1);
+
+                table.appendTo('#result');
+
+                let button = $('<button>').text('Add').addClass('btn btn-sm btn-info').attr({ 'id': 'addButton', 'type': 'button' });
+                $('#result').append(button);
+
+                let contragentObj = {
+                    'Name': response.name,
+                    'Address': response.address,
+                    'VAT': response.vat,
+                    'Mail': null,
+                    'UserId': 1
+                };
+
+                $('#addButton').on('click', function () {
+                    $.ajax({
+                        method: "POST",
+                        url: "https://localhost:7046/Contragents/Add",
+                        contentType: "application/json; charset=utf-16",
+                        dataType: "json",
+                        data: JSON.stringify(contragentObj), 
+                        success: function (response) {
+                            window.location.href = response.redirectToUrl;
+                        }
+                    });
+                });
+            }
+        });
+    });
+</script>

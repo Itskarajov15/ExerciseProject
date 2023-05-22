@@ -1,0 +1,42 @@
+﻿@model ContragentViewModel
+@{
+    ViewData["Title"] = "Add Contragent";
+}
+
+<section class="p-6">
+    <h2 class="text-center">Add Contragent</h2>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger ml-4"></div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label asp-for="Name">Name</label>
+                <input asp-for="Name" type="text" class="form-control form-control-sm" required>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 form-group">
+                <label asp-for="Address">Address</label>
+                <input asp-for="Address" type="text" class="form-control form-control-sm" required>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label asp-for="Mail">Mail</label>
+                <input asp-for="Mail" type="text" class="form-control form-control-sm" required>
+                <span asp-validation-for="Mail" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 form-group">
+                <label asp-for="VAT">VAT</label>
+                <input asp-for="VAT" type="text" class="form-control form-control-sm" required>
+                <span asp-validation-for="VAT" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

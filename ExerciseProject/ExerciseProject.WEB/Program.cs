@@ -36,6 +36,11 @@ app.UseRouting();
 
 app.UseCookiePolicy(cookiePolicyOptions);
 
+app.UseCors(options => options
+        .AllowAnyHeader()
+        .AllowAnyOrigin()
+        .AllowAnyMethod());
+
 app.UseAuthentication();
 app.UseAuthorization();
 

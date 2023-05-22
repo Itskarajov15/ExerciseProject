@@ -1,5 +1,6 @@
 ﻿using ExerciseProject.Core.Contracts;
 using ExerciseProject.Core.Models.Contragents;
+using ExerciseProject.Core.Models.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +10,16 @@ namespace ExerciseProject.WEB.Controllers
     public class ContragentsController : Controller
     {
         private readonly IContragentsService contragentsService;
-
         public ContragentsController(IContragentsService contragentsService)
         {
             this.contragentsService = contragentsService;
         }
+
+        //[HttpGet]
+        //public IActionResult Add()
+        //{
+        //    return View();
+        //}
 
         [HttpGet]
         public IActionResult Add()
@@ -22,7 +28,7 @@ namespace ExerciseProject.WEB.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(ContragentViewModel contragent)
+        public async Task<IActionResult> Add([FromBody] ContragentViewModel contragent)
         {
             if (!ModelState.IsValid)
             {
@@ -36,10 +42,9 @@ namespace ExerciseProject.WEB.Controllers
             if (!isCreated)
             {
                 ModelState.AddModelError(String.Empty, "A contragents with that VAT number already exists");
-                return View(contragent);
             }
 
-            return RedirectToAction("GetAll", "Contragents");
+            return Json(new { redirectToUrl = Url.Action("GetAll", "Contragents") });
         }
 
         [HttpGet]

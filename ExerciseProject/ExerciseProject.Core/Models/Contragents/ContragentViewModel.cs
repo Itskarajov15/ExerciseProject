@@ -16,11 +16,10 @@ namespace ExerciseProject.Core.Models.Contragents
         [Display(Name = "Address")]
         public string Address { get; set; } = null!;
 
-        [Required]
         [StringLength(255, MinimumLength = 6, ErrorMessage = "{0} must be between {2} and {1} characters long.")]
         [Display(Name = "Mail")]
         [EmailAddress]
-        public string Mail { get; set; } = null!;
+        public string? Mail { get; set; }
 
         [Required]
         [StringLength(11, MinimumLength = 11, ErrorMessage = "{0} must be {1} characters long.")]

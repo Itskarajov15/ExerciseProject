@@ -18,13 +18,12 @@ namespace ExerciseProject.API.Features.Contragents
             {
                 using (var connection = new SqlConnection(this.connectionString))
                 {
-                    var command = new SqlCommand(@"INSERT INTO Contragents (Name, Address, Mail, UserId, VAT) 
+                    var command = new SqlCommand(@"INSERT INTO Contragents (Name, Address, UserId, VAT) 
                                                VALUES
-                                               (@name, @address, @mail, @userId, @vat)", connection);
+                                               (@name, @address, @userId, @vat)", connection);
 
                     command.Parameters.AddWithValue("name", contragent.Name);
                     command.Parameters.AddWithValue("address", contragent.Address);
-                    command.Parameters.AddWithValue("mail", contragent.Mail);
                     command.Parameters.AddWithValue("userId", contragent.UserId);
                     command.Parameters.AddWithValue("vat", contragent.VAT);
 
@@ -72,7 +71,7 @@ namespace ExerciseProject.API.Features.Contragents
                         Id = (int)reader["Id"],
                         Address = (string)reader["Address"],
                         VAT = (string)reader["VAT"],
-                        Mail = (string)reader["Mail"],
+                        Mail = reader["Mail"] == DBNull.Value ? "" : (string?)reader["Mail"],
                         UserId = (int)reader["UserId"]
                     };
                 };
@@ -101,7 +100,7 @@ namespace ExerciseProject.API.Features.Contragents
                     Id = (int)reader["Id"],
                     Name = (string)reader["Name"],
                     Address = (string)reader["Address"],
-                    Mail = (string)reader["Mail"],
+                    Mail = reader["Mail"] == DBNull.Value ? "" : (string?)reader["Mail"],
                     UserId = (int)reader["UserId"],
                     VAT = (string)reader["VAT"]
                 };
