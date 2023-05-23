@@ -3,6 +3,7 @@ using ExerciseProject.Core.Models.Contragents;
 using ExerciseProject.Core.Models.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace ExerciseProject.WEB.Controllers
 {
@@ -41,7 +42,8 @@ namespace ExerciseProject.WEB.Controllers
 
             if (!isCreated)
             {
-                ModelState.AddModelError(String.Empty, "A contragents with that VAT number already exists");
+                ModelState.AddModelError(String.Empty, "A contragent with that VAT number already exists.");
+                return Json(new { success = false, issue = contragent, errors = ModelState.Values.Where(i => i.Errors.Count > 0) });
             }
 
             return Json(new { redirectToUrl = Url.Action("GetAll", "Contragents") });
